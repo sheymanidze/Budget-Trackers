@@ -16,3 +16,20 @@ request.onsuccess = function (event) {
     checkDatabase();
   }
 };
+
+
+//error
+request.onerror = function (e) {
+  console.log(`Woops! ${e.target.errorCode}`);
+};
+
+function saveRecord(record) {
+  //transaction with readwrite access
+  const transaction = db.transaction(["pending"], "readwrite");
+
+  //pending object store
+  const store = transaction.objectStore("pending");
+
+  // add record
+  store.add(record);
+}
