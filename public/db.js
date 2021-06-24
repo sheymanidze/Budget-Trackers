@@ -69,3 +69,6 @@ function saveRecord(record) {
   // add record
   store.add(record);
 }
+
+//listen when back online
+window.addEventListener('online', checkDatabase);
