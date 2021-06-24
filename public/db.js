@@ -5,9 +5,42 @@ const request = indexedDB.open("budget", 1);
 
 //run when database is upgrated
 request.onupgradeneeded = (event) => {
-  const db = event.target.result;
+  db = event.target.result;
   db.createObjectStore("pending", { autoIncrement: true });
 };
+
+function checkDatabase() {
+  let transaction = db.transaction(['pending'], 'readwrite');
+
+  const store = transaction.objectStore('pending');
+  const getAll = store.getAll();
+
+  getAll.onsuccess = function () {
+    if (getAll.result.length > 0) {
+      fetch('/api/transaction/bulk', {
+        method: 'POST',
+        body: JSON.stringify(getAll.result),
+        headers: {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((res) => {
+          if (res.length !== 0) {
+            const currentStore = transaction.objectStore('pending');
+
+            currentStore.clear();
+
+
+          }
+
+        });
+
+    }
+  };
+
+}
 
 //if app online
 request.onsuccess = function (event) {
@@ -16,7 +49,7 @@ request.onsuccess = function (event) {
   console.log(request)
   db = event.target.result;
   if (navigator.onLine) {
-    //checkDatabase();
+    checkDatabase();
   }
 };
 
