@@ -11,3 +11,14 @@ var FILES_TO_CACHE = [
   "/manifest.webmanifest",
   "/styles.css"
 ];
+
+// installation
+self.addEventListener("install", function (evt) {
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log("Your files were pre-cached successfully!");
+      return cache.addAll(FILES_TO_CACHE);
+    })
+  );
+  self.skipWaiting();
+});
