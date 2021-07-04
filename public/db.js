@@ -28,6 +28,7 @@ function checkDatabase() {
         .then((response) => response.json())
         .then((res) => {
           if (res.length !== 0) {
+            transaction = db.transaction(['pending'], 'readwrite');
             const currentStore = transaction.objectStore('pending');
 
             currentStore.clear();
@@ -44,9 +45,6 @@ function checkDatabase() {
 
 //if app online
 request.onsuccess = function (event) {
-  console.log(request.result)
-  console.log(event)
-  console.log(request)
   db = event.target.result;
   if (navigator.onLine) {
     checkDatabase();
